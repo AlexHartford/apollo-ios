@@ -187,7 +187,13 @@ public class ApolloCodegen {
     _ config: ConfigurationContext,
     _ frontend: GraphQLJSFrontend
   ) throws -> GraphQLSchema {
-    let matches = try Glob(config.input.schemaSearchPaths, relativeTo: config.rootURL).match()
+    var searchPaths = config.input.schemaSearchPaths
+    searchPaths.append(contentsOf: [
+      "!**/.build/**/*.graphqls",
+      "!**/.swiftpm/**/*.graphqls",
+      "!**/.Pods/**/*.graphqls"])
+
+    let matches = try Glob(searchPaths, relativeTo: config.rootURL).match()
 
     guard !matches.isEmpty else {
       throw Error.cannotLoadSchema
@@ -202,7 +208,13 @@ public class ApolloCodegen {
     _ frontend: GraphQLJSFrontend,
     _ experimentalFeatures: ApolloCodegenConfiguration.ExperimentalFeatures
   ) throws -> GraphQLDocument {
-    let matches = try Glob(config.input.operationSearchPaths, relativeTo: config.rootURL).match()
+    var searchPaths = config.input.operationSearchPaths
+    searchPaths.append(contentsOf: [
+      "!**/.build/**/*.graphql",
+      "!**/.swiftpm/**/*.graphql",
+      "!**/.Pods/**/*.graphql"])
+
+    let matches = try Glob(searchPaths, relativeTo: config.rootURL).match()
 
     guard !matches.isEmpty else {
       throw Error.cannotLoadOperations
